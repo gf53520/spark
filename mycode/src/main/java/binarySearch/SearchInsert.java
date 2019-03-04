@@ -8,7 +8,7 @@ return the index if the target is found.
 https://leetcode.com/problems/search-insert-position/
  */
 public class SearchInsert {
-  // 二分查找本身返回元素应该插入的位置
+  // 二分查找本身返回元素应该插入的位置， 返回第一个index的值大于或者等于target
   public static int searchInsert(int[] nums, int target) {
     int left = 0;
     int right = nums.length - 1;
