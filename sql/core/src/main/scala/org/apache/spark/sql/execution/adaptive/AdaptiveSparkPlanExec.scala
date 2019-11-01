@@ -306,7 +306,7 @@ case class AdaptiveSparkPlanExec(
             }
 
             // We've created a new stage, which is obviously not ready yet.
-            CreateStageResult(newPlan = newStage,
+              CreateStageResult(newPlan = newStage,
               allChildStagesMaterialized = false, newStages = Seq(newStage))
           } else {
             CreateStageResult(newPlan = newPlan,
@@ -319,9 +319,9 @@ case class AdaptiveSparkPlanExec(
         allChildStagesMaterialized = q.resultOption.isDefined, newStages = Seq.empty)
 
     case _ =>
-      if (plan.children.isEmpty) {
+      if (plan.children.isEmpty) { // 叶子节点
         CreateStageResult(newPlan = plan, allChildStagesMaterialized = true, newStages = Seq.empty)
-      } else {
+      } else { // 非叶子节点，且非Exchange节点
         val results = plan.children.map(createQueryStages)
         CreateStageResult(
           newPlan = plan.withNewChildren(results.map(_.newPlan)),

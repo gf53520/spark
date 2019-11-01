@@ -83,13 +83,13 @@ object AggUtils {
 
     val groupingAttributes = groupingExpressions.map(_.toAttribute)
     val partialAggregateExpressions = aggregateExpressions.map(_.copy(mode = Partial))
-    val partialAggregateAttributes =
+    val partialAggregateAttributes = // p-fields
       partialAggregateExpressions.flatMap(_.aggregateFunction.aggBufferAttributes)
-    val partialResultExpressions =
+    val partialResultExpressions =   // p-results
       groupingAttributes ++
         partialAggregateExpressions.flatMap(_.aggregateFunction.inputAggBufferAttributes)
 
-    val partialAggregate = createAggregate(
+    val partialAggregate = createAggregate( // p-agg
         requiredChildDistributionExpressions = None,
         groupingExpressions = groupingExpressions,
         aggregateExpressions = partialAggregateExpressions,

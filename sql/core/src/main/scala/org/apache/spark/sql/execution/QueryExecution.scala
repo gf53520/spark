@@ -121,15 +121,17 @@ class QueryExecution(
   protected def preparations: Seq[Rule[SparkPlan]] = Seq(
     // `AdaptiveSparkPlanExec` is a leaf node. If inserted, all the following rules will be no-op
     // as the original plan is hidden behind `AdaptiveSparkPlanExec`.
-    InsertAdaptiveSparkPlan(sparkSession, this),
+    InsertAdaptiveSparkPlan(sparkSession, this), // 支持自适应优化
     PlanDynamicPruningFilters(sparkSession),
-    PlanSubqueries(sparkSession),
+    PlanSubqueries(sparkSession), // 当select存在表达式为ScalarSubquery时， 例如只有单行单列的sql语句时候
+    // add shuffleExchange to meet partition and distribution
     EnsureRequirements(sparkSession.sessionState.conf),
     ApplyColumnarRulesAndInsertTransitions(sparkSession.sessionState.conf,
       sparkSession.sessionState.columnarRules),
-    CollapseCodegenStages(sparkSession.sessionState.conf),
-    ReuseExchange(sparkSession.sessionState.conf),
-    ReuseSubquery(sparkSession.sessionState.conf))
+    CollapseCodegenStages(sparkSession.sessionState.conf),// 折叠支持WholeStageCodegen的plan
+    ReuseExchange(sparkSession.sessionState.conf),// 重用 shuffle/broadcast exchange
+    ReuseSubquery(sparkSession.sessionState.conf) // 重用 ScalarSubquery 子查询结果
+  )
 
   def simpleString: String = simpleString(false)
 
